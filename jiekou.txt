@@ -1,0 +1,595 @@
+2.8.1.1 实时连接接口 
+实时连接接口基于智云平台的消息推送服务，消息推送服务通过利用云端与客户端之间建立稳
+定、可靠的长连接来为开发者提供向客户端应用推送实时消息服务。智云消息推送服务针对物联网
+行业特征，支持多种推送类型：传感实时数据、执行控制命令、地理位置信息、SMS 短信消息等，
+同时提供用户信息及通知消息统计信息，方便开发者进行后续开发及运营。 
+基于 Android 的接口如下： 
+表 2.8.1 智云物联平台安卓基本接口 
+函数 参数说明 功能 
+new WSNRTConnect(String myZCloudID, myZCloudID:智云账号 建立实时数据实例，并初
+String myZCloudKey); myZCloudKey:智云密钥 始化智云 ID 及密钥 
+connect() 无 建立实时数据服务连接 
+disconnect() 无 断开实时数据服务连接 
+setRTConnectListener(){ 
+ onConnect() 
+ onConnectLost(Throwable arg0) 
+ onMessageArrive(String mac, byte[] 
+dat) 
+} 
+mac:传感器的 MAC 地址 
+dat：发送的消息内容 
+设置监听，接收实时数据
+服务推送过来的消息： 
+onConnect:连接成功操
+作 
+onConnectLost: 连 接
+失败操作 
+onMessageArrive: 数
+据接收操作 
+sendMessage(String mac, byte[] dat) 
+ mac:传感器的 MAC 地址 
+dat：发送的消息内容 
+发送消息 
+setServerAddr(String sa) 
+sa:数据中心服务器地址及端
+口 
+设置/改变数据中心服务
+器地址及端口号 
+setIdKey(String myZCloudID, String 
+myZCloudKey); 
+myZCloudID:智云账号 
+myZCloudKey:智云密钥 
+设置/改变智云 ID 及密钥
+（需要重新断开连接） 
+2.8.1.2 历史数据接口 
+历史数据基于智云数据中心提供的智云数据库接口开发，智云数据库采用 Hadoop 后端分布式
+数据库集群，并且多机房自动冗余备份，自动读写分离，开发者不需要关注后端机器及数据库的稳
+定性、网络问题、机房灾难、单库压力等各种风险。物联网传感器数据可以在智云数据库永久保存，
+通过提供的简单的 API 编程接口可以完成与云存储服务器的数据连接、数据访问存储、数据使用等。 
+基于 Android 的接口如下： 
+表 2.8.2 智云物联平台安卓历史数据接口 
+函数 参数说明 功能 
+new WSNHistory(String myZCloudID, 
+String myZCloudKey); 
+myZCloudID:智云账号 
+myZCloudKey:智云密钥 
+初始化历史数据对象，并
+初始化智云 ID 及密钥 
+queryLast1H(String channel); channel:传感器数据通道 
+查询最近 1 小时的历史数
+据 
+queryLast6H(String channel); channel:传感器数据通道 
+查询最近 6 小时的历史数
+据 
+queryLast12H(String channel); channel:传感器数据通道 
+查询最近 12 小时的历史
+数据 
+queryLast1D(String channel); channel:传感器数据通道 查询最近 1 天的历史数据 
+queryLast5D(String channel); channel:传感器数据通道 查询最近 5 天的历史数据 
+queryLast14D(String channel); channel:传感器数据通道 
+查询最近 14 天的历史数
+据 
+queryLast1M(String channel); channel:传感器数据通道 
+查询最近 1 月（30 天）的
+历史数据 
+queryLast3M(String channel); channel:传感器数据通道 
+查询最近 3 月（90 天）的
+历史数据 
+queryLast6M(String channel); channel:传感器数据通道 
+查询最近 6 月（180 天）
+的历史数据 
+queryLast1Y(String channel); channel:传感器数据通道 
+查询最近 1 年（365 天）
+的历史数据 
+query(); 无 
+获取所有通道最后一次数
+据 
+query(String channel); channel:传感器数据通道 
+获取该通道下最后一次数
+据 
+query(String channel, String 
+start, String end); 
+channel:传感器数据通道 
+start:起始时间 
+end:结束时间 
+时间为 ISO 8601 格式的日期，例
+如：2010-05-20T11:00:00Z 
+通过起止时间查询指定时
+间段的历史数据（根据时
+间范围默认选择采样间
+隔） 
+query(String channel, String 
+start, String end, String 
+interval); 
+channel:传感器数据通道 
+start:起始时间 
+end:结束时间 
+interval:采样点的时间间隔，详
+细见后续说明 
+时间为 ISO 8601 格式的日期，例
+如：2010-05-20T11:00:00Z 
+通过起止时间查询指定时
+间段指定时间间隔的历史
+数据 
+setServerAddr(String sa) sa:数据中心服务器地址及端口 
+设置/改变数据中心服务
+器地址及端口号 
+setIdKey(String myZCloudID, String 
+myZCloudKey); 
+myZCloudID:智云账号 
+myZCloudKey:智云密钥 
+设置/改变智云 ID 及密钥 
+附注： 
+1. 每次采样的数据点最大个数为 1500 
+2. 历史数据返回格式示例（压缩的 JSON 格式）： 
+{"current_value":"11.0","datapoints":[{"at":"2015-08-30T14:30:14Z","value":"11.0"},{"at":"2015-08-30T14:30:24Z","v
+alue":"11.0"},{"at":"2015-08-30T14:30:34Z","value":"12.0"},......{"at":"2015-08-30T15:29:54Z","value":"11.0"},{"at":"
+2015-08-30T15:30:04Z","value":"11.0"}],"id":"00:12:4B:00:02:37:7E:7A_A0","at":"2015-08-30T15:30:04Z"} 
+3. 历史数据接口支持动态的调整采样间隔，当查询函数没有赋值“interval”参数时，采样间隔
+遵循以下原则取点： 
+表 2.8.3 智云物联平台安卓历史数据时间查询范围 
+一次查询支持的最大查询范围 Interval 默认取值 描述 
+≤ 6 hours 0 提取存储的每个点 
+≤ 12 hours 30 每 30 秒取一个点 
+≤ 24 hours 60 每 1 分钟取一个点 
+≤ 5 days 300 每 5 分钟取一个点 
+≤ 14 days 900 每 15 分钟取一个点 
+≤ 30 days 1800 每 30 分钟取一个点 
+≤ 90 days 10800 每 3 小时取一个点 
+≤ 180 days 21600 每 6 小时取一个点 
+≤ 365 days 43200 每 12 小时取一个点 
+> 365 days 86400 每 24 小时取一个点 
+* interval 取值必须为上述表格中的固定数值，例如：interval=30 
+* 当根据定义获取历史数据的某个时间间隔点没有有效的数据时，会遵循以下原则： 
+- 查询前后最相邻的数据作为本次采集的数据，查询范围为前后相邻各半个采集时间间隔点的
+一个采集周期 
+- 如果相邻的采集周期内没有有效的数据，则本次时间间隔点没有数据 
+- 采用相邻的数据作为本次采集时间间隔点的数据时数据的时间仍然是数据点所在的真实时间 
+
+2.8.1.5 用户数据接口 
+智云用户数据接口提供私有的数据库使用权限，实现多客户端间共享的私有数据进行存储、查
+询和使用。私有数据存储采用 key-value 型数据库服务，编程接口更简单高效。 
+基于 Android 的接口如下： 
+表 2.8.6 智云物联平台安卓用户数据接口 
+函数 参数说明 功能 
+new WSNProperty(String 
+myZCloudID,String myZCloudKey); 
+myZCloudID:智云账号 
+myZCloudKey:智云密钥 
+初始化用户数据对象，并
+初始化智云 ID 及密钥 
+put(String key,String value); 
+key:名称 
+value:内容 
+创建用户应用数据 
+get(); 无 获取所有的键值对 
+get(String key); key:名称 
+获取指定 key 的 value
+值 
+setServerAddr(String sa) 
+sa:数据中心服务器地址及
+端口 
+设置/改变数据中心服务
+器地址及端口号 
+setIdKey(String myZCloudID, String 
+myZCloudKey); 
+myZCloudID:智云账号 
+myZCloudKey:智云密钥 
+设置/改变智云 ID 及密钥 
+2.8.2 示例分析 
+结合智云节点和 ZXBee 协议，我们开发了一套基于 Android 的简单的 libwsnDroidDemo 程序
+（该程序在出厂光盘的“05-实验例程\第 2 章：智云物联开发基础\ 实验 04：智云 Android 应用示
+例”目录下）供用户理解。根据 2.4.3 中实现的接口，在该应用中实现的功能主要是传感器的读取与
+控制、历史数据查询与曲线显示、摄像头的控制、自动控制和应用数据存储与读取，为了让程序更
+有可读性，该应用使用 2 个包，每个包分为多个 Activity 类，使用接口实现控制与数据的存取，其
+中，在 com.zhiyun360.wsn.auto 包下是对自动控制接口中的方法进行调用与实现的。因此主 activity 只需要实现通过点击不同的按钮、或多层次按钮跳转到其他 Activity 中即可。因此在 src 包中的目
+录结构如下图所示： 
+
+
+其中，DemoActivity 即为主 Activity，主要是作为一个引导作用，用来跳转到不同的 Activity，
+也可在 DemoActivity.java 文件中定义静态变量，方便引用。每个 activity 都应有自己的布局，这里
+不详述布局文件的编写。 
+2.8.2.1 实时连接接口 
+要实现传感器实时数据的发送需要在 SensorActivity.java 文件中调用类 WSNRTConnect 的几
+个方法即可，具体调用方法及步骤如下： 
+1）连接服务器地址。外网服务器地址及端口默认为 zhiyun360.com:28081，如果用户需要修改，
+调用方法 setServerAddr(sa)进行设置即可。 
+wRTConnect.setServerAddr(zhiyun360.com:28081); //设置外网服务器地址及端口 
+2）初始化智云 ID 及秘钥。先定义序列号和密钥，然后初始化，本示例中是在 DemoActivity 中
+设置 ID 与 Key，并在每个 Activity 中直接调用即可，后续不在陈述。 
+String myZCloudID = "12345678";//序列号 
+String myZCloudKey = "12345678";//密钥 
+wRTConnect = new WSNRTConnect(DemoActivity.myZCloudID,DemoActivity.myZCloudKey); 
+特别注意：序列号和密钥为用户注册云平台账户时所需的传感器序列号和密钥。 
+3）建立数据推送服务连接。 
+wRTConnect.connect(); //调用connect方法 
+4）注册数据推送服务监听器。接收实时数据服务推送过来的消息。 
+wRTConnect.setRTConnectListener(new WSNRTConnectListener() { 
+ @Override 
+ public void onConnect() { //连接服务器成功 
+ // TODO Auto-generated method stub 
+ } 
+ 
+ @Override 
+ public void onConnectLost(Throwable arg0) { //连接服务器失败 
+ // TODO Auto-generated method stub 
+ } 
+ 
+ @Override 
+ public void onMessageArrive(String arg0, byte[] arg1) { //数据到达 
+ // TODO Auto-generated method stub 
+ } 
+ 
+ }); 
+5）实现消息发送。调用 sendMessage 方法想指定的传感器发送消息。 
+String mac = "00:12:4B:00:03:A7:E1:17";//目的地址 
+String dat = "{OD1=1,D1=?}" //数据指令格式 
+wRTConnect.sendMessage(mac, dat.getBytes()); //发送消息 
+特别注意： sendMessage 方法只有当数据推送服务连接成功后使用有效。 
+6）断开数据推送服务。 
+wRTConnect.disconnect(); 
+7）SensorActivity 的完整示例。下面是一个完整的 SensorActivity.java 代码示例，源码参考： 
+libwsnDroidDemo/src/SensorActivity.java。 
+public class SensorActivity extends Activity { 
+ 
+ private Button mBTNOpen,mBTNClose; 
+ private TextView mTVInfo; 
+ private WSNRTConnect wRTConnect; 
+ 
+ private void textInfo(String s) { 
+ mTVInfo.setText(mTVInfo.getText().toString() + "\n" + s); 
+ } 
+@Override 
+ public void onCreate(Bundle savedInstanceState) { 
+ super.onCreate(savedInstanceState); 
+ setContentView(R.layout.sensor); 
+ setTitle("传感器数据采集与控制模块"); 
+ mBTNOpen = (Button) findViewById(R.id.btnOpen); 
+ mBTNClose = (Button) findViewById(R.id.btnClose); 
+ 
+ mTVInfo = (TextView) findViewById(R.id.tvInfo); 
+ //实例化WSNRTConnect，并初始化智云ID和KEY 
+ wRTConnect = new WSNRTConnect(DemoActivity.myZCloudID,DemoActivity.myZCloudKey); 
+ //设置WSNRTConnect服务器地址 
+ wRTConnect.setServerAddr("zhiyun360.com:28081"); 
+ //设置监听器 
+ mBTNClose.setOnClickListener(new View.OnClickListener() { 
+ 
+ @Override 
+ public void onClick(View v) { 
+ // TODO Auto-generated method stub 
+ String mac = "00:12:4B:00:03:A7:E1:17"; 
+ String dat = "{CD1=1,D1=?}"; 
+ textInfo(mac + " <<< " + dat); 
+ wRTConnect.sendMessage(mac, dat.getBytes()); 
+ } 
+ }); 
+ //建立连接 
+ wRTConnect.connect(); 
+ 
+ mBTNOpen.setOnClickListener(new OnClickListener() { 
+ 
+ @Override 
+ public void onClick(View arg0) { 
+ // TODO Auto-generated method stub 
+ String mac = "00:12:4B:00:03:A7:E1:17"; 
+ String dat = "{OD1=1,D1=?}"; 
+ textInfo(mac + " <<< " + dat); 
+ wRTConnect.sendMessage(mac, dat.getBytes()); 
+ } 
+ 
+ }); 
+wRTConnect.setRTConnectListener(new WSNRTConnectListener() { 
+ @Override 
+ public void onConnect() { 
+ // TODO Auto-generated method stub 
+ textInfo("connected to server"); 
+ } 
+ 
+ @Override 
+ public void onConnectLost(Throwable arg0) { 
+ // TODO Auto-generated method stub 
+ textInfo("connection lost"); 
+ } 
+ 
+ @Override 
+ public void onMessageArrive(String arg0, byte[] arg1) { 
+ // TODO Auto-generated method stub 
+ textInfo(arg0 + " >>> " + new String(arg1)); 
+ } 
+ 
+ }); 
+ 
+ textInfo("connecting..."); 
+ } 
+ 
+ @Override 
+ public void onDestroy() { 
+ wRTConnect.disconnect();//断开连接 
+ super.onDestroy(); 
+ } 
+} 
+2.8.2.2 历史数据接口 
+同理，要实现获取传感器的历史数据需要在 HistoryActivity.java 文件中调用类 WSNHistory 的
+几个方法即可，具体调用方法及步骤如下： 
+1）实例化历史数据对象。直接实例化并连接。 
+2）连接服务器地址。外网服务器地址及端口默认为 zhiyun360.com:28081，如果用户需要修改，
+调用方法 setServerAddr(sa)进行设置即可。 
+wRTConnect.setServerAddr(zhiyun360.com:28081); //设置外网服务器地址及端口 
+3）初始化智云 ID 及秘钥。先定义序列号和密钥，然后初始化。 
+String myZCloudID = "12345678";//序列号 
+String myZCloudKey = "12345678";//密钥 
+wHistory = new WSNHistory (DemoActivity.myZCloudID,DemoActivity.myZCloudKey);//初始化智云ID及密钥 
+特别注意：序列号和密钥为用户注册云平台账户时所需的传感器序列号和密钥。 
+4）查询历史数据。以下方法为查询自定义时段的历史数据，如需要查询其他时间段（例如，最
+近 1 个小时，最近一个月）历史数据，请参考 2.4.3 API 的介绍。 
+wHistory.queryLast1H(String channel); 
+wHistory.queryLast1M(String channel) ; 
+5）HistoryActivity 的完整示例。下面是一个完整的 HistoryActivity.java 代码示例，源码参考：
+SDK 包/Android/libwsnDroidDemo/src/HistoryActivity.java。 
+ 
+public class HistoryActivity extends Activity implements OnClickListener { 
+ 
+ private String channel = "00:12:4B:00:02:CB:A8:52_A0"; // 定义数据流通道 
+ Button mBTN1H, mBTN6H, mBTN12H, mBTN1D, mBTN5D, mBTN14D, mBTN1M, mBTN3M, 
+ mBTN6M, mBTN1Y, mBTNSTART, mBTNEND, mBTNQUERY; 
+ TextView mTVData; 
+ SimpleDateFormat simpleDateFormat; 
+ SimpleDateFormat outputDateFormat; 
+ 
+ WSNHistory wHistory; // 定义历史数据对象 
+ 
+ @SuppressLint("SimpleDateFormat") 
+ @Override 
+ public void onCreate(Bundle savedInstanceState) { 
+ super.onCreate(savedInstanceState); 
+ setContentView(R.layout.histroy); 
+ simpleDateFormat = new SimpleDateFormat("yyyy-M-d"); 
+ outputDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
+ 
+ mTVData = (TextView) findViewById(R.id.tvData); 
+ mBTN1H = (Button) findViewById(R.id.btn1h); 
+ mBTN6H = (Button) findViewById(R.id.btn6h); 
+ mBTN12H = (Button) findViewById(R.id.btn12h); 
+mBTN1D = (Button) findViewById(R.id.btn1d); 
+ mBTN5D = (Button) findViewById(R.id.btn5d); 
+ mBTN14D = (Button) findViewById(R.id.btn14d); 
+ mBTN1M = (Button) findViewById(R.id.btn1m); 
+ mBTN3M = (Button) findViewById(R.id.btn3m); 
+ mBTN6M = (Button) findViewById(R.id.btn6m); 
+ mBTN1Y = (Button) findViewById(R.id.btn1y); 
+ mBTNSTART = (Button) findViewById(R.id.btnStart); 
+ mBTNEND = (Button) findViewById(R.id.btnEnd); 
+ mBTNQUERY = (Button) findViewById(R.id.query); 
+ 
+ // 为每个按钮设置监听器响应点击事件 
+ mBTN1H.setOnClickListener(this); 
+ mBTN6H.setOnClickListener(this); 
+ mBTN12H.setOnClickListener(this); 
+ mBTN1D.setOnClickListener(this); 
+ mBTN5D.setOnClickListener(this); 
+ mBTN14D.setOnClickListener(this); 
+ mBTN1M.setOnClickListener(this); 
+ mBTN3M.setOnClickListener(this); 
+ mBTN6M.setOnClickListener(this); 
+ mBTN1Y.setOnClickListener(this); 
+ mBTNSTART.setOnClickListener(this); 
+ mBTNEND.setOnClickListener(this); 
+ mBTNQUERY.setOnClickListener(this); 
+ 
+ wHistory = new WSNHistory(); // 初始化历史数据对象 
+ // 初始化智云ID和秘钥 
+ wHistory.initZCloud(DemoActivity.myZCloudID, DemoActivity.myZCloudKey); 
+ 
+ } 
+ 
+ // 为按钮实现点击事件 
+ @Override 
+ public void onClick(View arg0) { 
+ // TODO Auto-generated method stub 
+ mTVData.setText(""); 
+ String result = null; 
+ try { 
+ if (arg0 == mBTN1H) { // 查询近 1 小时的历史数据 
+result = wHistory.queryLast1H(channel); 
+ } 
+ if (arg0 == mBTN6H) { // 查询近 6 小时的历史数据 
+ result = wHistory.queryLast6H(channel); 
+ } 
+ if (arg0 == mBTN12H) { // 查询近 12 小时的历史数据 
+ result = wHistory.queryLast12H(channel); 
+ } 
+ if (arg0 == mBTN1D) { // 查询近 1 天的历史数据 
+ result = wHistory.queryLast1D(channel); 
+ } 
+ if (arg0 == mBTN5D) { // 查询近 5 天的历史数据 
+ result = wHistory.queryLast5D(channel); 
+ } 
+ if (arg0 == mBTN14D) { // 查询近 14 天的历史数据 
+ result = wHistory.queryLast14D(channel); 
+ } 
+ if (arg0 == mBTN1M) { // 查询近 1 个月的历史数据 
+ result = wHistory.queryLast1M(channel); 
+ } 
+ if (arg0 == mBTN3M) { // 查询近 3 个月的历史数据 
+ result = wHistory.queryLast3M(channel); 
+ } 
+ if (arg0 == mBTN6M) { // 查询近 6 个月的历史数据 
+ result = wHistory.queryLast6M(channel); 
+ } 
+ if (arg0 == mBTN1Y) { // 查询近 1 年的历史数据 
+ result = wHistory.queryLast1Y(channel); 
+ } 
+ if (arg0 == mBTNSTART) { // 设置要查询数据的起始时间 
+ new DatePickerDialog(this, 
+ new DatePickerDialog.OnDateSetListener() { 
+ 
+ @Override 
+ public void onDateSet(DatePicker view, int year, 
+ int monthOfYear, int dayOfMonth) { 
+ mBTNSTART.setText(year + "-" 
+ + (monthOfYear + 1) + "-" + dayOfMonth); 
+ } 
+}, 2014, 0, 1).show(); 
+ } 
+ if (arg0 == mBTNEND) { // 设置要查询数据的截止时间 
+ new DatePickerDialog(this, 
+ new DatePickerDialog.OnDateSetListener() { 
+ 
+ @Override 
+ public void onDateSet(DatePicker view, int year, 
+ int monthOfYear, int dayOfMonth) { 
+ mBTNEND.setText(year + "-" + (monthOfYear + 1) 
+ + "-" + dayOfMonth); 
+ } 
+ 
+ }, 2014, 0, 1).show(); 
+ } 
+ if (arg0 == mBTNQUERY) { // 点击查询按钮 
+ Date sdate = simpleDateFormat.parse(mBTNSTART.getText() 
+ .toString()); 
+ Date edate = simpleDateFormat.parse(mBTNEND.getText() 
+ .toString()); 
+ String start = outputDateFormat.format(sdate) + "Z"; 
+ String end = outputDateFormat.format(edate) + "Z"; 
+ result = wHistory.queryLast(start, end, "0", channel); // 调用查询函数 
+ } 
+ 
+ mTVData.setText(jsonFormatter(result)); // 显示数据 
+ 
+ } catch (Exception e) { 
+ e.printStackTrace(); 
+ Toast.makeText(getApplicationContext(), "查询数据失败，请重试！", 
+ Toast.LENGTH_SHORT).show(); 
+ } 
+ } 
+ 
+ public static String jsonFormatter(String uglyJSONString) { 
+ Gson gson = new GsonBuilder().setPrettyPrinting().create(); 
+ JsonParser jp = new JsonParser(); 
+ JsonElement je = jp.parse(uglyJSONString); 
+ String prettyJsonString = gson.toJson(je); 
+ return prettyJsonString; 
+} 
+} 
+特别注意：由于库里定义的查询函数都抛出了异常，所以在调用的时候需要用 try…catch 来捕
+获异常。此外，序列号、密钥为用户注册云平台账户时用到的传感器序列号和密钥，数据流通道为
+传感器的 MAC 地址与上传参数组成的一个字符串，例如：“00:12:4B:00:02:3C:6F:29_A0”。 
+6）本次示例中也实现了历史数据曲线显示。在 HistoryActivityEx.java 类中，调用同样的方法初
+始化并建立连接，后引用 java.text.SimpleDateFormat 包中的方法进行 data-.>text 格式转换，代码
+如下，此处不对该方法进行过多阐述。读者可自行查阅相关资料。 
+SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
+ JSONObject jsonObjs = new JSONObject(result); 
+ JSONArray datapoints = jsonObjs.getJSONArray("datapoints"); 
+ if (datapoints.length() == 0) { 
+ Toast.makeText(getApplicationContext(), "获取数据点为 0！", 
+ Toast.LENGTH_SHORT).show(); 
+ return; 
+ } 
+ for (int i = 0; i < datapoints.length(); i++) { 
+ JSONObject jsonObj = datapoints.getJSONObject(i); 
+ 
+ String val = jsonObj.getString("value"); 
+ String at = jsonObj.getString("at"); 
+ 
+ Double dval = Double.parseDouble(val); 
+ Date dat = outputDateFormat.parse(at); 
+ 
+ xlist.add(dat); 
+ ylist.add(dval); 
+ } 
+7）引用 org.achartengine 中的子类，我们可以实现数据图表显示。已在代码中注释完毕，便不
+在这里过多陈述方法的调用，读者也可自行查阅。代码如下： 
+XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer(); 
+ renderer.setAxisTitleTextSize(16);//数轴文字字体大小 
+ renderer.setChartTitleTextSize(20);//标题字体大小 
+ renderer.setLabelsTextSize(15);//数轴刻度字体大小 
+ renderer.setLegendTextSize(15);//曲线 
+ renderer.setPointSize(5f); 
+ renderer.setMargins(new int[] { 20, 30, 15, 20 }); 
+XYSeriesRenderer r = new XYSeriesRenderer(); 
+ r.setColor(Color.rgb(30, 144, 255)); 
+ // r.setPointStyle(PointStyle.CIRCLE); 
+ r.setFillPoints(false); 
+ r.setLineWidth(1); 
+ r.setDisplayChartValues(true); 
+ renderer.addSeriesRenderer(r);//加载曲线信息 
+ 
+ renderer.setApplyBackgroundColor(true); 
+ renderer.setBackgroundColor(Color.WHITE); 
+ renderer.setXLabels(10); 
+ renderer.setYLabels(10); 
+ renderer.setShowGrid(true); 
+ renderer.setMarginsColor(Color.WHITE); 
+ renderer.setZoomButtonsVisible(true); 
+ 
+ renderer.setChartTitle(""); 
+ renderer.setXTitle("时间"); 
+ renderer.setYTitle("数值"); 
+ renderer.setXAxisMin(xlist.get(0).getTime()); 
+ renderer.setXAxisMax(xlist.get(xlist.size()-1).getTime()); 
+ renderer.setYAxisMin(minValue); 
+ renderer.setYAxisMax(maxValue);//数轴上限 
+ renderer.setAxesColor( Color.LTGRAY); 
+ renderer.setLabelsColor( Color.LTGRAY); 
+ 
+ XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset(); 
+ TimeSeries series = new TimeSeries("历史数据"); 
+ 
+ for (int k = 0; k < xlist.size(); k++) { 
+ series.add(xlist.get(k), ylist.get(k));//载入数据 
+ } 
+ dataset.addSeries(series);//通过series传递加载数据 
+ 
+ GraphicalView mGrapView = ChartFactory.getTimeChartView(getBaseContext(), 
+ dataset, renderer, "M/d-H:mm"); 
+ LinearLayout layout = (LinearLayout) findViewById(R.id.curveLayout); 
+ LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, 
+LayoutParams.FILL_PARENT); 
+ lp.weight = 1; 
+layout.addView(mGrapView, lp);//视图显示并加载 
+8）同理，我们需要借助 try-catch 语句来处理查询失败情况 
+try{ 
+......} 
+catch (Exception e) { 
+ // TODO Auto-generated catch block 
+ e.printStackTrace(); 
+ Toast.makeText(getApplicationContext(), "获取历史数据失败！", 
+ Toast.LENGTH_SHORT).show(); 
+ } 
+
+2.8.2.4 应用数据接口 
+1）同样方法，初始化 id、key，并建立连接，连接服务器，代码略。 
+2）调用 wsnProperty 的 put(key,value)方法保存键值对。 
+String propertyKey = editKey.getText().toString(); 
+ String propertyValue = editValue.getText().toString(); 
+ if(propertyKey.equals("") || propertyValue.equals("")){ 
+ Toast.makeText(PropertyActivity.this, " 应 用 属 性 名 或 应 用 属 性 值 不 能 为 空 ", 
+Toast.LENGTH_SHORT).show(); 
+ }else{ 
+ try { 
+ wsnProperty.put(propertyKey, propertyValue); 
+ Toast.makeText(PropertyActivity.this, " 成 功 保 存 应 用 属 性 值 到 服 务 器 ", 
+Toast.LENGTH_SHORT).show(); 
+ } catch (Exception e) { 
+ e.printStackTrace(); 
+ } 
+ } 
+3）调用 wsnProperty 的 get()方法读取键值对。 
+String propertyKey = editKey.getText().toString(); 
+try { 
+ if(propertyKey.equals("")){ 
+ String result = wsnProperty.get(); 
+ Toast.makeText(PropertyActivity.this, " 成 功 从 服 务 器 读 取 所 有 的 应 用 属 性 值 ", 
+Toast.LENGTH_SHORT).show(); 
+ tvResult.setText(jsonFormatter(result)); 
+ }else{ 
+ String result = wsnProperty.get(propertyKey); 
+ Toast.makeText(PropertyActivity.this, " 成 功 从 服 务 器 读 取 应 用 属 性 值 ", 
+Toast.LENGTH_SHORT).show(); 
+ tvResult.setText("属性名为："+propertyKey+",属性值为："+jsonFormatter(result)); 
+ } 
+ } catch (Exception e) { 
+ e.printStackTrace(); 
+ } 
+
