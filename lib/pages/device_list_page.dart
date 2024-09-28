@@ -39,7 +39,10 @@ class _DeviceListPageState extends State<DeviceListPage> {
               itemBuilder: (context, index) {
                 final device = snapshot.data![index];
                 return ListTile(
-                  title: Text(device['deviceName']),
+                  title: Text(
+                    device['deviceName'],
+                    style: TextStyle(fontFamily: 'Roboto'), // 使用支持中文的字体
+                  ),
                   subtitle: Text(device['macAddress']),
                   onTap: () {
                     Navigator.push(

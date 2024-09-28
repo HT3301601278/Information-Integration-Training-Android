@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
-  final String baseUrl = 'http://10.0.2.2:8080';
+  final String baseUrl = 'http://192.168.193.98:8080';
   String? token;
 
   Future<bool> login(String username, String password) async {
@@ -24,15 +24,15 @@ class ApiService {
     final response = await http.get(
       Uri.parse('$baseUrl/api/devices'),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Authorization': 'Bearer $token',
       },
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return jsonDecode(utf8.decode(response.bodyBytes));
     }
-    throw Exception('Failed to load devices');
+    throw Exception('加载设备失败');
   }
 
   Future<Map<String, dynamic>> getDeviceData(String deviceId, {DateTime? startTime, DateTime? endTime}) async {
@@ -50,8 +50,8 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return jsonDecode(utf8.decode(response.bodyBytes));
     }
-    throw Exception('Failed to load device data');
+    throw Exception('加载设备数据失败');
   }
 }
