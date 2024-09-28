@@ -35,6 +35,25 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _register() async {
+    if (_formKey.currentState!.validate()) {
+      bool success = await _apiService.register(
+        _usernameController.text,
+        _passwordController.text,
+      );
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('注册成功,请登录')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('注册失败,请重试')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,6 +89,11 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: _login,
                 child: Text('登录'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _register,
+                child: Text('注册'),
               ),
             ],
           ),

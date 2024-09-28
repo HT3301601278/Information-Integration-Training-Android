@@ -54,4 +54,17 @@ class ApiService {
     }
     throw Exception('加载设备数据失败');
   }
+
+  Future<bool> register(String username, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'username': username, 'password': password}),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
 }
