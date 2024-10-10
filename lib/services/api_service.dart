@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
-  final String baseUrl = 'http://192.168.193.98:8080';
+  final String baseUrl = 'http://192.168.75.47:8080';
   String? token;
 
   Future<bool> login(String username, String password) async {
